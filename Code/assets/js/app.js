@@ -38,7 +38,8 @@ function loadChart() {
   // Create an SVG wrapper 
   // Use D3 to select the location for the chart,
   // Append SVG area to fit chart, and set dimensions
-  var svg = d3.select("#scatter").append("svg")
+  var svg = d3.select("#scatter")
+    .append("svg")
     .attr("width", svgWidth)
     .attr("height", svgHeight);
 
@@ -47,6 +48,15 @@ function loadChart() {
   // set in the "margin" object.
   var chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+  // ============================================================================
+  // Initial Params
+  var chosenXAxis = "in_poverty";
+  
+  // function used for updating x-scale var upon click on axis label
+  function xScale(stateData, chosenXAxis) {
+    
+  }
 
   // =============================================================================
   // Import/Load data from stateData.csv in the assets/data folder
@@ -60,16 +70,20 @@ function loadChart() {
 
     // Parse Data & Cast values used in chart(s) below 
     // using forEach and the unary + operator
-    // values include: healthcare, poverty
+    // values include: healthcare, poverty, smokes, age
     stateData.forEach(function(data) {
       data.healthcare = +data.healthcare;
       data.poverty = +data.poverty;
+      data.smokes = +data.smokes;
+      data.age = +data.age;
 
       // console.log "cast" values
       console.log("state:", data.state);
       console.log("abbr:", data.abbr);
-      console.log ("healtCare:", data.healthcare);    
-      console.log ("poverty:", data.poverty);
+      console.log("healtCare:", data.healthcare);    
+      console.log("poverty:", data.poverty);
+      console.log("smokes", data.smokes);
+      console.log("age", data.age);
     });
 
     // Create scale functions using d3.scaleLinear
@@ -79,7 +93,7 @@ function loadChart() {
       .range([0, chartWidth]);
    
     var yLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(stateData, d => d.healthcare)])  // using d3.max to return max for domain
+      .domain([d.min(stateData, d => d.), d3.max(stateData, d => d.healthcare)])  // using d3.max to return max for domain
       .range([chartHeight, 0]);
 
     // Create axis functions
