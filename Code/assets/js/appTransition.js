@@ -5,8 +5,8 @@
 
 d3.select(window).on("resize", handleResize);
 
-// When the browswer loads, loadChart is called
-handleResize(); // loadChart();
+// When the browswer loads, handleResize is called
+handleResize(); 
 
 // Automatically resize the chart
 function handleResize() {
@@ -15,17 +15,14 @@ function handleResize() {
   // If there is already an svg container on the page,
   // remove it and reload the chart
   if (!svgArea.empty()) {
-    svgArea.remove();
-    //loadChart();
+    svgArea.remove();    
   }
-
-
-  //function loadChart() {
+ 
   // Define SVG area dimensions using innerWidth and innerHeight
   var svgWidth = window.innerWidth;
   var svgHeight = window.innerHeight;
 
-  // Define the chart's margins as an object and adjust chartWidth and chartHeight
+  // Define the chart's margins as an object, use to make minnir adjustments to chartWidth and chartHeight
   var margin = {
   top: 20,
   right:40,
@@ -37,24 +34,24 @@ function handleResize() {
   var chartHeight = svgHeight - margin.top - margin.bottom;
 
   // Create an SVG wrapper and use D3 to select the location for the chart,
-  // Append SVG area to fit chart, and set dimensions
+  // Append SVG area to fit chart, and set dimensions of the chart
   var svg = d3.select("#scatter")
     .append("svg")
     .attr("width", svgWidth)
     .attr("height", svgHeight);
 
-  // Append SVG chartGroup and shift ('translate') to the right and down to adhere to the margins
-  // set in the "margin" object.
+  // Append SVG chartGroup and shift ('translate') to the right and down to adhere to the margins set in the "margin" object above.
   var chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+  // ============================================================================
   // ============================================================================
   // Prep Work (prior to loading csv)
   // ===========================================================================
 
   // Initial Parameters for X and Y Axis
   var chosenXAxis = "poverty";
-  var chosenYAxis = "healthcare"
+  var chosenYAxis = "healthcare";
   
   // ===============================================================
   // Update X and Y Scale
@@ -154,13 +151,17 @@ function handleResize() {
     })
 
     // onmouseout event
-    .on("mouseout", function(data, index) { // note: index is not used
+    .on("mouseout", function(data) { // note: index is not used
         toolTip.hide(data);
         });
     return textGroup;
   } // close function updateToolTip
 
+  // ============================================================================
+  // Prep work complete
   // =============================================================================
+
+  // ============================================================================
   // Import data from csv
   // =============================================================================
 
@@ -173,8 +174,7 @@ function handleResize() {
 
   function successHandle(stateData) {
 
-    // Parse Data & Cast values used in chart(s) below 
-    // using forEach and the unary + operator to ensure any string is re-cast as a number
+    // Parse Data & Cast values used in chart(s) below using forEach and the unary + operator to ensure any string is re-cast as a number
     stateData.forEach(function(data) {
       data.healthcare = +data.healthcare;
       data.poverty = +data.poverty;
@@ -182,8 +182,13 @@ function handleResize() {
       data.income = +data.income;
       data.obesity = +data.obesity;
       data.smokes = +data.smokes;
-      console.log(data.state);     
+      console.log(data.state, data.abbr); // console.log to assist in debugging (identifies that data has been loaded)    
     });
+
+    // ===============================================================
+    // Data Import Complete
+    // ===============================================================
+
     // ===============================================================
     // Create inital "scatterplot"
     // ===============================================================
@@ -195,7 +200,7 @@ function handleResize() {
     // Create inital axis functions
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
-    // ===============================================================
+    // ===================================================
     // Append axes to chart
     // Append x axis
     var xAxis = chartGroup.append("g")
@@ -207,7 +212,7 @@ function handleResize() {
     var yAxis = chartGroup.append("g")
       .classed("y-axis", true)
       .call(leftAxis);
-    // ===============================================================
+    // ====================================================
     // Create Circles: Append circles to stateData using chartGroup
     var circlesGroup = chartGroup.selectAll(".stateCircle") 
       .data(stateData)
@@ -217,7 +222,7 @@ function handleResize() {
       .attr("cx", d => xLinearScale(d[chosenXAxis]))
       .attr("cy", d => yLinearScale(d[chosenYAxis]))
       .attr("r", "14")
-      // .attr("fill", "rgb(51, 102, 153)" )  //attributes in d3Style.css
+      // .attr("fill", "rgb(51, 102, 153)" )  //attributes now in d3Style.css
       // .attr("opacity", "0.7")
       // .attr("stroke-width", "1")
       // .attr("stroke", "gray");
@@ -227,7 +232,7 @@ function handleResize() {
       .enter()
       .append("text")
       .attr("class", "stateText")
-      //.attr("text-anchor", "middle")  // attributes in d3Style.css
+      //.attr("text-anchor", "middle")  // attributes now in d3Style.css
       .text(function(d) {return d.abbr;})
       .attr("x", d => xLinearScale(d[chosenXAxis]))
       .attr("y", d => yLinearScale(d[chosenYAxis])+6)
